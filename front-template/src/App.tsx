@@ -93,7 +93,7 @@ export default function App() {
       <main className="p-8 max-w-7xl mx-auto">
         {perfil === 'colaborador' ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            {/* FORMULÁRIO EXATO DA IMAGEM */}
+            {/* FORMULÁRIO */}
             <div className="lg:col-span-4 bg-white p-8 rounded-[32px] shadow-lg border border-slate-100 space-y-6">
               <h2 className="text-xl font-black text-[#003C3C] italic border-l-4 border-[#9DFF9D] pl-4 uppercase">Nova Solicitação</h2>
               
@@ -139,7 +139,7 @@ export default function App() {
               <button onClick={handleEnviarChamado} className="w-full bg-[#003C3C] text-white py-4 rounded-2xl font-black uppercase hover:bg-[#9DFF9D] hover:text-[#003C3C] transition shadow-md active:scale-95">Enviar Chamado</button>
             </div>
 
-            {/* LISTA EXATA DA IMAGEM */}
+            {/* LISTA */}
             <div className="lg:col-span-8 space-y-6">
               <h2 className="text-xl font-black text-[#003C3C] italic border-b-2 border-slate-200 pb-2 uppercase tracking-tight">Meus Chamados</h2>
               <div className="space-y-4">
