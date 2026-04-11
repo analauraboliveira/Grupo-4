@@ -23,7 +23,7 @@ export default function App() {
     }
   ]);
 
-  // Estados do Formulário (Restaurados)
+  // Estados do Formulário 
   const [inputTitulo, setInputTitulo] = useState('');
   const [inputImpacto, setInputImpacto] = useState('Baixo');
   const [inputUrgencia, setInputUrgencia] = useState('Baixa');
@@ -109,7 +109,7 @@ export default function App() {
       <main className="p-8 max-w-7xl mx-auto">
         {perfil === 'colaborador' ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            {/* FORMULÁRIO COMPLETO DO SOLICITANTE */}
+            {/* FORMULÁRIO DO SOLICITANTE */}
             <div className="lg:col-span-5 bg-white p-8 rounded-[32px] shadow-lg border border-slate-100 space-y-6">
               <h2 className="text-xl font-black text-[#003C3C] italic border-l-4 border-[#9DFF9D] pl-4 uppercase">Nova Solicitação</h2>
               
