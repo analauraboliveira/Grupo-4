@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export class AtendenteController {
 
-    async visualizarHistorico(req: Request, res: Response) {
+    async getHistory(req: Request, res: Response) {
         const { id } = req.params;
 
         try {
@@ -36,7 +36,7 @@ export class AtendenteController {
         }
     }
 
-    async assumirChamado(req: Request, res: Response) {
+    async assignTicket(req: Request, res: Response) {
         const { id } = req.params;
         const { atendente_id } = req.body;
 
@@ -45,7 +45,7 @@ export class AtendenteController {
                 where: { id },
                 data: {
                     atendente_id: Number(atendente_id),
-                    status: 'Em Atendimento'
+                    status: 'Em Atendimento'  //TODO: definir um enumClass para os status dos chamados
                 }
             });
 
@@ -55,7 +55,7 @@ export class AtendenteController {
         }
     }
 
-    async atualizarStatusChamado(req: Request, res: Response) {
+    async updateStatus(req: Request, res: Response) {
         const { id } = req.params;
         const { status_novo, alterado_por, observacao } = req.body;
 
@@ -65,13 +65,11 @@ export class AtendenteController {
 
                 if (!chamadoAtual) throw new Error('Chamado não encontrado.');
 
-                // Atualiza o chamado principal
                 const chamado = await tx.chamados.update({
                     where: { id },
                     data: { status: status_novo }
                 });
 
-                // Registra o histórico
                 await tx.historico_status.create({
                     data: {
                         chamado_id: id,
@@ -92,7 +90,7 @@ export class AtendenteController {
         }
     }
 
-    async adicionarComentario(req: Request, res: Response) {
+    async updateComment(req: Request, res: Response) {
         const { id } = req.params;
         const { autor_id, mensagem, tipo } = req.body;
 
