@@ -481,25 +481,25 @@ def main():
     
     
     # Passo 2: Gerar o gráfico de chamadas ao longo do tempo
-    #gerar_grafico_chamados_por_dia(engine)
-    #gerar_grafico_chamados_por_semana(engine)
-    #gerar_grafico_chamados_por_mes(engine)
+    gerar_grafico_chamados_por_dia(engine)
+    gerar_grafico_chamados_por_semana(engine)
+    gerar_grafico_chamados_por_mes(engine)
 
     # Analisar tempo de atentimento e resolução
-    #analisar_medias_tempo(engine, "Últimos 5 Anos", "5 years")
-    #analisar_medias_tempo(engine, "Últimos 2 Anos", "2 years")
+    analisar_medias_tempo(engine, "Últimos 5 Anos", "5 years")
+    analisar_medias_tempo(engine, "Últimos 2 Anos", "2 years")
 
     # Taxa de reabertura
-    # analisar_taxa_reabertura(engine)
+    analisar_taxa_reabertura(engine)
 
     # Distribuição
-    # gerar_painel_distribuicao(engine)
+    gerar_painel_distribuicao(engine)
 
     # Gargalos
-    # identificar_gargalos(engine)
-    # identificar_gargalos_2_anos(engine)
+    identificar_gargalos(engine)
+    identificar_gargalos_2_anos(engine)
 
-    # 
+    # SLA
     rodar_analise_sla_avancada(engine)
     
 if __name__ == "__main__":
