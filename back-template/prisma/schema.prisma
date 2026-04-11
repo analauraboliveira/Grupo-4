@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model chamados {
+  id                                         String             @id @db.VarChar(50)
+  titulo                                     String?
+  descricao                                  String?
+  tipo                                       String?            @db.VarChar(100)
+  categoria                                  String?            @db.VarChar(100)
+  prioridade                                 String?            @db.VarChar(100)
+  impacto                                    String?            @db.VarChar(100)
+  urgencia                                   String?            @db.VarChar(100)
+  status                                     String?            @db.VarChar(100)
+  solicitante_id                             Int?
+  atendente_id                               Int?
+  prazo_desejado                             DateTime?          @db.Date
+  data_abertura                              DateTime?          @db.Date
+  hora_abertura                              String?            @db.VarChar(50)
+  ultima_atualizacao                         DateTime?          @db.Timestamp(6)
+  criado_em                                  DateTime?          @db.Timestamp(6)
+  observacao_legado                          String?
+  usuarios_chamados_atendente_idTousuarios   usuarios?          @relation("chamados_atendente_idTousuarios", fields: [atendente_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuarios_chamados_solicitante_idTousuarios usuarios?          @relation("chamados_solicitante_idTousuarios", fields: [solicitante_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  comentarios                                comentarios[]
+  historico_status                           historico_status[]
+}
+
+model comentarios {
+  id         Int       @id @default(autoincrement())
+  chamado_id String    @db.VarChar(50)
+  autor_id   Int
+  mensagem   String?
+  tipo       String?   @db.VarChar(100)
+  criado_em  DateTime? @db.Timestamp(6)
+  usuarios   usuarios  @relation(fields: [autor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  chamados   chamados  @relation(fields: [chamado_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model historico_status {
+  id              Int       @id @default(autoincrement())
+  chamado_id      String    @db.VarChar(50)
+  status_anterior String?   @db.VarChar(100)
+  status_novo     String?   @db.VarChar(100)
+  alterado_por    Int
+  alterado_em     DateTime? @db.Timestamp(6)
+  observacao      String?
+  usuarios        usuarios  @relation(fields: [alterado_por], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  chamados        chamados  @relation(fields: [chamado_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model sla_config {
+  id                    Int     @id @default(autoincrement())
+  prioridade            String? @db.VarChar(100)
+  prazo_resposta_horas  Int?
+  prazo_resolucao_horas Int?
+}
+
+model usuarios {
+  id                                         Int                @id @default(autoincrement())
+  nome                                       String?            @db.VarChar(500)
+  email                                      String?            @db.VarChar(500)
+  perfil                                     String?            @db.VarChar(100)
+  categoria_atendimento                      String?            @db.VarChar(200)
+  departamento                               String?            @db.VarChar(200)
+  ativo                                      Boolean?
+  criado_em                                  DateTime?          @db.Timestamp(6)
+  chamados_chamados_atendente_idTousuarios   chamados[]         @relation("chamados_atendente_idTousuarios")
+  chamados_chamados_solicitante_idTousuarios chamados[]         @relation("chamados_solicitante_idTousuarios")
+  comentarios                                comentarios[]
+  historico_status                           historico_status[]
+}
