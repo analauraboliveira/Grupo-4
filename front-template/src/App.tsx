@@ -4,25 +4,26 @@ export default function App() {
   const [tela, setTela] = useState<'login' | 'sistema'>('login');
   const [perfil, setPerfil] = useState<'colaborador' | 'atendente' | null>(null);
   
-  // Estados de Login
   const [usuario, setUsuario] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
 
-  // Dados e IDs Sequenciais 
   const [proximoId, setProximoId] = useState(2);
   const [chamados, setChamados] = useState([
     { 
-		// Exemplo
       id: '0001', 
       titulo: 'Erro de login no portal de projetos', 
       status: 'Em triagem',
       urgencia: 'Baixa',
-      impacto: 'Baixo'
+      impacto: 'Baixo',
+      categoria: 'Sistemas',
+      tipo: 'Incidente',
+      prazo: '',
+      solucao: ''
     }
   ]);
 
-  // Estados do Formulário 
+  // Estados do Formulário (Restaurados)
   const [inputTitulo, setInputTitulo] = useState('');
   const [inputImpacto, setInputImpacto] = useState('Baixo');
   const [inputUrgencia, setInputUrgencia] = useState('Baixa');
@@ -50,12 +51,27 @@ export default function App() {
       titulo: inputTitulo,
       status: 'Aberto',
       urgencia: inputUrgencia,
-      impacto: inputImpacto
+      impacto: inputImpacto,
+      categoria: inputCat,
+      tipo: inputTipo,
+      prazo: inputPrazo,
+      solucao: ''
     };
     setChamados([novo, ...chamados]);
     setProximoId(proximoId + 1);
-    setInputTitulo(''); setInputDesc('');
+    setInputTitulo(''); setInputDesc(''); setInputPrazo('');
     alert(`Chamado #${idFormatado} enviado!`);
+  };
+
+  const atualizarStatus = (id: string, novoStatus: string) => {
+    setChamados(chamados.map(c => c.id === id ? { ...c, status: novoStatus } : c));
+  };
+
+  const resolverChamado = (id: string) => {
+    const comentario = prompt("Descreva a solução aplicada:");
+    if (comentario) {
+      setChamados(chamados.map(c => c.id === id ? { ...c, status: 'Resolvido', solucao: comentario } : c));
+    }
   };
 
   if (tela === 'login') {
@@ -93,14 +109,14 @@ export default function App() {
       <main className="p-8 max-w-7xl mx-auto">
         {perfil === 'colaborador' ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            {/* FORMULÁRIO */}
-            <div className="lg:col-span-4 bg-white p-8 rounded-[32px] shadow-lg border border-slate-100 space-y-6">
+            {/* FORMULÁRIO COMPLETO DO SOLICITANTE */}
+            <div className="lg:col-span-5 bg-white p-8 rounded-[32px] shadow-lg border border-slate-100 space-y-6">
               <h2 className="text-xl font-black text-[#003C3C] italic border-l-4 border-[#9DFF9D] pl-4 uppercase">Nova Solicitação</h2>
               
               <div className="space-y-4">
                 <div className="space-y-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase">Título</label>
-                  <input value={inputTitulo} onChange={e => setInputTitulo(e.target.value)} placeholder="Ex: Erro no ERP" className="w-full border-2 border-slate-50 p-3 rounded-xl text-sm bg-slate-50" />
+                  <input value={inputTitulo} onChange={e => setInputTitulo(e.target.value)} placeholder="Ex: Erro no acesso ao ERP" className="w-full border-2 border-slate-50 p-3 rounded-xl text-sm bg-slate-50" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -117,16 +133,16 @@ export default function App() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="text-[10px] font-black text-slate-400 uppercase">Categoria</label>
-                    <select value={inputCat} onChange={e => setInputCat(e.target.value)} className="w-full border-2 border-slate-50 p-3 rounded-xl text-xs bg-slate-50"><option>Sistemas</option><option>Dados</option><option>Acessos</option></select>
+                    <select value={inputCat} onChange={e => setInputCat(e.target.value)} className="w-full border-2 border-slate-50 p-3 rounded-xl text-xs bg-slate-50"><option>Sistemas</option><option>Dados</option><option>Acessos</option><option>Financeiro</option></select>
                   </div>
                   <div className="space-y-1">
                     <label className="text-[10px] font-black text-slate-400 uppercase">Tipo</label>
-                    <select value={inputTipo} onChange={e => setInputTipo(e.target.value)} className="w-full border-2 border-slate-50 p-3 rounded-xl text-xs bg-slate-50"><option>Incidente</option><option>Requisição</option></select>
+                    <select value={inputTipo} onChange={e => setInputTipo(e.target.value)} className="w-full border-2 border-slate-50 p-3 rounded-xl text-xs bg-slate-50"><option>Incidente</option><option>Requisição</option><option>Dúvida</option><option>Melhoria</option></select>
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-black text-slate-400 uppercase">Prazo Desejado</label>
+                  <label className="text-[10px] font-black text-slate-400 uppercase">Prazo Desejado (Opcional)</label>
                   <input type="date" value={inputPrazo} onChange={e => setInputPrazo(e.target.value)} className="w-full border-2 border-slate-50 p-3 rounded-xl text-xs bg-slate-50" />
                 </div>
 
@@ -139,8 +155,7 @@ export default function App() {
               <button onClick={handleEnviarChamado} className="w-full bg-[#003C3C] text-white py-4 rounded-2xl font-black uppercase hover:bg-[#9DFF9D] hover:text-[#003C3C] transition shadow-md active:scale-95">Enviar Chamado</button>
             </div>
 
-            {/* LISTA */}
-            <div className="lg:col-span-8 space-y-6">
+            <div className="lg:col-span-7 space-y-6">
               <h2 className="text-xl font-black text-[#003C3C] italic border-b-2 border-slate-200 pb-2 uppercase tracking-tight">Meus Chamados</h2>
               <div className="space-y-4">
                 {chamados.map(c => (
@@ -148,6 +163,7 @@ export default function App() {
                     <div>
                       <span className="text-[9px] font-black bg-slate-50 text-slate-400 px-2 py-1 rounded-md mb-2 inline-block">ID #{c.id}</span>
                       <p className="font-black text-slate-700 text-lg leading-tight">{c.titulo}</p>
+                      {c.solucao && <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-100"><p className="text-[10px] text-green-700 font-bold uppercase">Solução Aplicada:</p><p className="text-xs text-green-600">{c.solucao}</p></div>}
                     </div>
                     <span className="bg-blue-50 text-blue-600 border border-blue-100 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">{c.status}</span>
                   </div>
@@ -160,11 +176,12 @@ export default function App() {
           <div className="bg-white rounded-[32px] border border-slate-100 overflow-hidden shadow-2xl">
             <div className="p-8 bg-slate-50 border-b flex justify-between items-center">
               <h2 className="text-xl font-black italic text-[#003C3C] uppercase">Fila de Atendimento</h2>
+              <span className="bg-[#003C3C] text-white px-4 py-1 rounded-full text-[10px] font-black uppercase italic">Visão de Atendente</span>
             </div>
             <div className="overflow-x-auto p-4">
               <table className="w-full text-left">
-                <thead className="text-[10px] font-black text-slate-400 uppercase">
-                  <tr><th className="p-6">Solicitação</th><th className="p-6">Prioridade</th><th className="p-6 text-right">Ações</th></tr>
+                <thead className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b-2">
+                  <tr><th className="p-6">Solicitação</th><th className="p-6">Prioridade</th><th className="p-6">Status</th><th className="p-6 text-right">Gerenciar</th></tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                   {chamados.map(c => (
@@ -174,13 +191,21 @@ export default function App() {
                         <p className="font-black text-slate-800 text-lg tracking-tight">{c.titulo}</p>
                       </td>
                       <td className="p-6">
-                        <span className={`text-[10px] font-black px-3 py-1 rounded-full border-2 ${c.urgencia === 'Urgente' ? 'border-red-500 text-red-500' : 'border-slate-300 text-slate-400'}`}>
+                        <span className={`text-[10px] font-black px-4 py-1 rounded-full border-2 ${c.urgencia === 'Urgente' || c.urgencia === 'Alta' ? 'border-red-500 text-red-500 bg-red-50' : 'border-slate-200 text-slate-400'}`}>
                           {c.urgencia.toUpperCase()}
                         </span>
                       </td>
-                      <td className="p-6 text-right space-x-2">
-                        <button onClick={() => alert('Triagem Iniciada')} className="text-[9px] font-black bg-[#9DFF9D] text-[#003C3C] px-4 py-2 rounded-xl uppercase">Triagem</button>
-                        <button onClick={() => alert('Finalizado')} className="text-[9px] font-black bg-[#003C3C] text-white px-4 py-2 rounded-xl uppercase">Resolver</button>
+                      <td className="p-6">
+                        <span className="text-[10px] font-bold text-blue-500 uppercase italic underline">{c.status}</span>
+                      </td>
+                      <td className="p-6 text-right">
+                        <div className="flex flex-col gap-2 items-end">
+                           <div className="flex gap-2">
+                              <button onClick={() => atualizarStatus(c.id, 'Em atendimento')} className="text-[9px] font-black bg-blue-100 text-blue-700 px-3 py-2 rounded-xl uppercase hover:bg-blue-200">Atender</button>
+                              <button onClick={() => atualizarStatus(c.id, 'Aguardando Solicitante')} className="text-[9px] font-black bg-yellow-100 text-yellow-700 px-3 py-2 rounded-xl uppercase hover:bg-yellow-200">+ Info</button>
+                           </div>
+                           <button onClick={() => resolverChamado(c.id)} className="w-full text-[9px] font-black bg-[#003C3C] text-white px-3 py-2 rounded-xl uppercase hover:bg-[#9DFF9D] hover:text-[#003C3C] transition">Resolver e Encerrar</button>
+                        </div>
                       </td>
                     </tr>
                   ))}
