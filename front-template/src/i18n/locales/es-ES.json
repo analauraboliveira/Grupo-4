@@ -1,0 +1,148 @@
+{
+	"common": {
+		"loading": "Cargando...",
+		"error": "Error",
+		"success": "Éxito",
+		"warning": "Advertencia",
+		"info": "Información",
+		"save": "Guardar",
+		"cancel": "Cancelar",
+		"delete": "Eliminar",
+		"edit": "Editar",
+		"add": "Agregar",
+		"search": "Buscar",
+		"filter": "Filtrar",
+		"clear": "Limpiar",
+		"close": "Cerrar",
+		"open": "Abrir",
+		"yes": "Sí",
+		"no": "No",
+		"confirm": "Confirmar",
+		"back": "Volver",
+		"next": "Siguiente",
+		"previous": "Anterior",
+		"submit": "Enviar",
+		"reset": "Restablecer"
+	},
+	"navigation": {
+		"home": "Inicio",
+		"about": "Acerca de",
+		"contact": "Contacto",
+		"login": "Iniciar sesión",
+		"logout": "Cerrar sesión",
+		"profile": "Perfil",
+		"settings": "Configuraciones"
+	},
+	"form": {
+		"validation": {
+			"required": "Este campo es obligatorio",
+			"email": "Ingrese un email válido",
+			"minLength": "Mínimo {{count}} caracteres",
+			"maxLength": "Máximo {{count}} caracteres",
+			"min": "Valor mínimo: {{min}}",
+			"max": "Valor máximo: {{max}}",
+			"pattern": "Formato inválido",
+			"phone": "Ingrese un teléfono válido",
+			"cpf": "Ingrese un CPF válido",
+			"cnpj": "Ingrese un CNPJ válido",
+			"password": {
+				"weak": "Contraseña muy débil",
+				"medium": "Contraseña media",
+				"strong": "Contraseña fuerte",
+				"mismatch": "Las contraseñas no coinciden"
+			}
+		},
+		"placeholder": {
+			"email": "Ingrese su email",
+			"password": "Ingrese su contraseña",
+			"confirmPassword": "Confirme su contraseña",
+			"name": "Ingrese su nombre",
+			"phone": "Ingrese su teléfono",
+			"search": "Escriba para buscar..."
+		}
+	},
+	"auth": {
+		"login": {
+			"title": "Iniciar sesión",
+			"subtitle": "Inicie sesión en su cuenta",
+			"forgotPassword": "¿Olvidó la contraseña?",
+			"noAccount": "¿No tiene una cuenta?",
+			"signUp": "Registrarse",
+			"success": "Inicio de sesión exitoso",
+			"error": "Error al iniciar sesión"
+		},
+		"register": {
+			"title": "Registrarse",
+			"subtitle": "Cree su nueva cuenta",
+			"hasAccount": "¿Ya tiene una cuenta?",
+			"signIn": "Iniciar sesión",
+			"success": "Registro exitoso",
+			"error": "Error al crear cuenta"
+		},
+		"logout": {
+			"success": "Cierre de sesión exitoso"
+		}
+	},
+	"error": {
+		"generic": "Ocurrió un error inesperado",
+		"network": "Error de conexión con el servidor",
+		"unauthorized": "No tiene permiso para acceder a este recurso",
+		"forbidden": "Acceso denegado",
+		"notFound": "Recurso no encontrado",
+		"serverError": "Error interno del servidor",
+		"timeout": "Tiempo límite excedido",
+		"validation": "Error de validación de datos"
+	},
+	"toast": {
+		"success": {
+			"title": "¡Éxito!",
+			"saved": "Datos guardados exitosamente",
+			"deleted": "Elemento eliminado exitosamente",
+			"updated": "Elemento actualizado exitosamente",
+			"created": "Elemento creado exitosamente"
+		},
+		"error": {
+			"title": "¡Error!",
+			"saveFailed": "Error al guardar datos",
+			"deleteFailed": "Error al eliminar elemento",
+			"updateFailed": "Error al actualizar elemento",
+			"createFailed": "Error al crear elemento",
+			"loadFailed": "Error al cargar datos"
+		},
+		"warning": {
+			"title": "¡Advertencia!",
+			"unsavedChanges": "Hay cambios sin guardar"
+		},
+		"info": {
+			"title": "Información"
+		}
+	},
+	"date": {
+		"today": "Hoy",
+		"yesterday": "Ayer",
+		"tomorrow": "Mañana",
+		"days": {
+			"monday": "Lunes",
+			"tuesday": "Martes",
+			"wednesday": "Miércoles",
+			"thursday": "Jueves",
+			"friday": "Viernes",
+			"saturday": "Sábado",
+			"sunday": "Domingo"
+		},
+		"months": {
+			"january": "Enero",
+			"february": "Febrero",
+			"march": "Marzo",
+			"april": "Abril",
+			"may": "Mayo",
+			"june": "Junio",
+			"july": "Julio",
+			"august": "Agosto",
+			"september": "Septiembre",
+			"october": "Octubre",
+			"november": "Noviembre",
+			"december": "Diciembre"
+		}
+	}
+}

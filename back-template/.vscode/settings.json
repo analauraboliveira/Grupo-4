@@ -1,0 +1,63 @@
+{
+	"editor.formatOnPaste": true,
+	"editor.tabSize": 4,
+	"editor.insertSpaces": true,
+	"editor.detectIndentation": false,
+	"editor.rulers": [120],
+	"files.insertFinalNewline": true,
+	"files.trimTrailingWhitespace": true,
+	"[python]": {
+		"editor.defaultFormatter": "ms-python.autopep8",
+		"editor.formatOnSave": true,
+		"editor.codeActionsOnSave": {
+			"source.organizeImports": "explicit",
+			"source.fixAll": "never"
+		}
+	},
+	"autopep8.importStrategy": "fromEnvironment",
+	"autopep8.path": ["${workspaceFolder}/.venv/bin/autopep8"],
+	"python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+	"python.terminal.activateEnvironment": true,
+	"python.envFile": "${workspaceFolder}/.env",
+	"python.analysis.extraPaths": ["${workspaceFolder}"],
+	"python.analysis.typeCheckingMode": "standard",
+	"python-envs.pythonProjects": [],
+	"ruff.enable": true,
+	"ruff.importStrategy": "fromEnvironment",
+	"ruff.lint.enable": true,
+	"ruff.configuration": "ruff.toml",
+	// pylint has been too slow for development, so far recommend using ruff instead
+	"pylint.enabled": false,
+	"pylint.importStrategy": "fromEnvironment",
+	"pylint.args": [
+		"--rcfile=${workspaceFolder}/.pylintrc"
+		// "--pythonpath=${workspaceFolder}/.venv/bin/python"
+	],
+	"cSpell.words": [
+		"asgi",
+		"asyncio",
+		"BUILDKIT",
+		"CERTDIR",
+		"dind",
+		"dotenv",
+		"fastapi",
+		"granian",
+		"httpx",
+		"isort",
+		"mongoengine",
+		"mypy",
+		"passlib",
+		"pycache",
+		"pydantic",
+		"pyproject",
+		"pytest",
+		"PYTHONUNBUFFERED",
+		"qualitygate",
+		"sonarqube",
+		"sonarsource",
+		"sqlalchemy"
+	],
+	"python.testing.pytestArgs": ["tests"],
+	"python.testing.unittestEnabled": false,
+	"python.testing.pytestEnabled": true
+}

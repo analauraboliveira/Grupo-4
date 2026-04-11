@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Model",
+      "type": "shell",
+      "command": "source ${workspaceFolder}/.venv/bin/activate && python ${workspaceFolder}/src/main.py",
+      "options": {
+        "statusbar": {
+          "label": "$(play)Run Model",
+          "color": "#31eb31"
+        },
+      },
+      "group": {
+        "kind": "none",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint with Pylint",
+      "type": "shell",
+      "command": "source ${workspaceFolder}/.venv/bin/activate && ${workspaceFolder}/.venv/bin/pylint ${file}",
+      "options": {
+        "statusbar": {
+          "label": "$(alert) Pylint this file",
+          "color": "#eab308"
+        }
+      },
+      "group": {
+        "kind": "none",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+    }
+  ]
+}

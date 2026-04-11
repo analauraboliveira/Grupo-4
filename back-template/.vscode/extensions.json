@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "sonarsource.sonarlint-vscode",
+    "ms-python.autopep8",
+    "actboy168.tasks",
+    "ms-python.pylint",
+    "ms-python.debugpy",
+    "ms-python.python",
+    "ms-python.vscode-python-envs",
+    "streetsidesoftware.code-spell-checker",
+    "charliermarsh.ruff"
+  ]
+}

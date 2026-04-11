@@ -1,0 +1,3 @@
+[python]
+# Always use the venv in .venv directory
+venv = { path = ".venv" }

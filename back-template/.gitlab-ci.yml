@@ -1,0 +1,151 @@
+stages:
+  - test
+  - code_analysis
+  - build_and_deploy
+
+variables:
+  AWS_REGION: us-east-1
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+  GIT_SUBMODULE_FORCE_HTTPS: "true"
+  CUSTOM_ENVIRONMENT: default
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'homolog'
+      variables:
+        CUSTOM_ENVIRONMENT: homolog
+    - if: $CI_COMMIT_BRANCH == 'main'
+      variables:
+        CUSTOM_ENVIRONMENT: production
+    - when: always
+
+owasp_dependency_check:
+  image:
+    name: registry.gitlab.com/gitlab-ci-utils/docker-dependency-check:latest
+    entrypoint: [""]
+  stage: test
+  script:
+    - >
+      /usr/share/dependency-check/bin/dependency-check.sh --scan "./" --format ALL
+      --project "$CI_PROJECT_NAME"
+  allow_failure: true
+  artifacts:
+    when: always
+    paths:
+      - "./dependency-check-report.html"
+      - "./dependency-check-report.json"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'main' && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_COMMIT_BRANCH == 'homolog' && $CI_PIPELINE_SOURCE == "push"
+
+pytest:
+  image: python:3.12
+  stage: test
+  needs: []
+  variables:
+    PYTHONPATH: "${CI_PROJECT_DIR}"
+  before_script:
+    - curl -LsSf https://astral.sh/uv/install.sh | sh
+    - export PATH="/root/.local/bin:${PATH}"
+    - uv pip install --system -r requirements.lock
+  script:
+    - python -m pytest tests/ --junitxml=pytest-report.xml --cov=src --cov-report=xml -v
+    - ls -la  # Debug - list files to verify artifacts are created
+  artifacts:
+    when: always
+    reports:
+      junit: pytest-report.xml
+    paths:
+      - coverage.xml
+      - pytest-report.xml
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'main' && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_COMMIT_BRANCH == 'homolog' && $CI_PIPELINE_SOURCE == "push"
+
+sonarqube-check:
+  stage: code_analysis
+  image:
+    name: sonarsource/sonar-scanner-cli:11
+    entrypoint: [""]
+  needs:
+    - job: owasp_dependency_check
+    - job: pytest
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar" # Defines the location of the analysis task cache
+    GIT_DEPTH: "0" # Tells git to fetch all the branches of the project, required by the analysis task
+    SONAR_SCANNER_OPTS: "-Dsonar.scm.provider=git -Dsonar.scm.disabled=false"
+  cache:
+    policy: pull-push
+    key: "sonar-cache-${CI_COMMIT_REF_SLUG}"
+    paths:
+      - "${SONAR_USER_HOME}/cache"
+  before_script:
+    - apt-get update && apt-get install -y git
+    - git config --global --add safe.directory "${CI_PROJECT_DIR}"
+    - echo "Working directory $(pwd)"
+    - echo "CI_PROJECT_DIR ${CI_PROJECT_DIR}"
+  script:
+    - ls -la  # Debug - verify files exist
+    - sonar-scanner
+  allow_failure: false
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'main' && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_COMMIT_BRANCH == 'homolog' && $CI_PIPELINE_SOURCE == "push"
+
+shouldideploytoday:
+  stage: build_and_deploy
+  image:
+    name: alpine:3.20
+  needs: []
+  before_script:
+    - apk add --no-cache curl jq
+  script:
+    - echo "Checking if it's a good day to deploy"
+    - echo "Para ignorar esse job, coloque a variável ALLOW_DEPLOY_ON_FRIDAY como true ao rodar a pipeline"
+    # - |
+    #   if [ "$ALLOW_DEPLOY_ON_FRIDAY" = true ]; then
+    #     echo "Deployment allowed on Friday";
+    #   else
+    #     ash ./scripts/shoulddeploy.sh;
+    #   fi
+  allow_failure: false
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+
+build_and_deploy:
+  image: piradata/aws-cli-git-docker:2.17.34
+  stage: build_and_deploy
+  needs:
+    - job: sonarqube-check
+      optional: true
+    - job: shouldideploytoday
+      optional: true
+  services:
+    - docker:dind
+  environment:
+    name: $CUSTOM_ENVIRONMENT
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'homolog'
+  variables:
+    DOCKER_REGISTRY: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+  before_script:
+    - job_started_at=$(echo ${CI_JOB_STARTED_AT} | sed -e "s/://g")
+    - job_started_at=$(echo ${job_started_at} | sed -e "s/-//g")
+    - ./scripts/docker_await.sh
+  script:
+    - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${DOCKER_REGISTRY}
+    - |
+      docker build . \
+      -t ${DOCKER_REGISTRY}/${APP_NAME}:latest \
+      -t ${DOCKER_REGISTRY}/${APP_NAME}:${CUSTOM_ENVIRONMENT} \
+      -t ${DOCKER_REGISTRY}/${APP_NAME}:${job_started_at} \
+      --build-arg GIT_COMMIT="${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}" \
+      --build-arg BUILDKIT_INLINE_CACHE=1 \
+      --cache-from="${DOCKER_REGISTRY}/${APP_NAME}:${CUSTOM_ENVIRONMENT}"
+    - docker push ${DOCKER_REGISTRY}/${APP_NAME} --all-tags
+    - aws ecs update-service --cluster ${ECS_CLUSTER_NAME} --service ${ECS_SERVICE_NAME} --force-new-deployment
