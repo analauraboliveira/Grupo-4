@@ -5,7 +5,7 @@ import { prisma } from "../../lib/prisma";
 export default class SolicitanteController {
     newCall: Handler = async (req, res) => {
         const { title, description, type, category, priority, impact, urgency, prazo_desejado, data_abertura, hora_abertura, observacao_legado } = req.body;
-        const { id } = req.user;
+        const { userId } = req.params;
         try {
             const novoChamado = await prisma.chamados.create({
                 data: {
@@ -20,7 +20,7 @@ export default class SolicitanteController {
                     data_abertura: data_abertura,
                     hora_abertura: hora_abertura,
                     observacao_legado: observacao_legado,
-                    solicitante_id: id,
+                    solicitante_id: Number(userId),
                     atendente_id: null,
                     status: "aberto",
                     criado_em: new Date(),
@@ -35,6 +35,7 @@ export default class SolicitanteController {
         }
     }
     getCallById: Handler = async (req, res) => {
+        const { userId } = req.params;
         const { id } = req.params;
         try {
             if (typeof id !== "string") {
@@ -43,6 +44,7 @@ export default class SolicitanteController {
             const call = await prisma.chamados.findUnique({
                 where: {
                     id: id,
+                    solicitante_id: Number(userId),
                 },
             });
             return res.json(call);
@@ -53,6 +55,7 @@ export default class SolicitanteController {
     }
     updateCall: Handler = async (req, res) => {
         const { id } = req.params;
+        const { userId } = req.params;
         try {
             if (typeof id !== "string") {
                 return res.status(400).json({ message: "Invalid id" });
@@ -60,6 +63,7 @@ export default class SolicitanteController {
             const call = await prisma.chamados.update({
                 where: {
                     id: id,
+                    solicitante_id: Number(userId),
                 },
                 data: req.body,
             });
@@ -70,11 +74,11 @@ export default class SolicitanteController {
         }
     }
     getHistory: Handler = async (req, res) => {
-        const { id } = req.user
+        const { userId } = req.params;
         try {
             const history = await prisma.chamados.findMany({
                 where: {
-                    solicitante_id: id,
+                    solicitante_id: Number(userId),
                 },
                 select: {
                     id: true,
